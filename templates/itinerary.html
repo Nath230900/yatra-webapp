@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Itineraries</h2>
+
+<div class="row">
+  <div class="col-md-5 mb-4">
+    <h4>Create new itinerary</h4>
+    <form method="post">
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-control" name="title" placeholder="10 days in Nepal" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Start date</label>
+        <input type="date" class="form-control" name="start_date">
+      </div>
+      <div class="mb-3">
+        <label class="form-label">End date</label>
+        <input type="date" class="form-control" name="end_date">
+      </div>
+      <button class="btn btn-primary">Create</button>
+    </form>
+  </div>
+
+  <div class="col-md-7">
+    {% for it in itineraries %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">{{ it.title }}</h5>
+        <p class="card-text small text-muted">
+          {% if it.start_date %}{{ it.start_date }}{% endif %}
+          {% if it.end_date %} – {{ it.end_date }}{% endif %}
+        </p>
+
+        <h6>Days</h6>
+        <ul class="list-group mb-3">
+          {% for item in it.items|sort(attribute='day_number') %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>Day {{ item.day_number }}:</strong> {{ item.destination.name }}
+              {% if item.notes %} – {{ item.notes }}{% endif %}
+            </div>
+            <form method="post" action="{{ url_for('delete_itinerary_item', it_id=it.id, item_id=item.id) }}">
+              <button class="btn btn-sm btn-outline-danger">X</button>
+            </form>
+          </li>
+          {% else %}
+          <li class="list-group-item">No days added yet.</li>
+          {% endfor %}
+        </ul>
+
+        <form class="row g-2" method="post" action="{{ url_for('add_itinerary_item', it_id=it.id) }}">
+          <div class="col-md-2">
+            <input type="number" class="form-control" name="day_number" min="1" placeholder="Day">
+          </div>
+          <div class="col-md-5">
+            <select name="destination_id" class="form-select">
+              {% for d in destinations %}
+                <option value="{{ d.id }}">{{ d.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" name="notes" placeholder="Notes">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-sm btn-primary w-100">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    {% else %}
+      <p>You do not have any itineraries yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

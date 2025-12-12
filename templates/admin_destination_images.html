@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin: Images for {{ destination.name }}</h2>
+
+<h4 class="mt-3">Existing images</h4>
+<div class="row mb-4">
+    {% for img in destination.images %}
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <img src="{{ url_for('static', filename='img/' ~ img.filename) }}" class="card-img-top"
+                alt="{{ destination.name }}">
+            <div class="card-body p-2">
+                <p class="small mb-0">{{ img.filename }}</p>
+                <form method="post"
+                    action="{{ url_for('delete_destination_image', img_id=img.id, dest_id=destination.id) }}">
+                    <button class="btn btn-sm btn-danger w-100 mt-1">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p>No images yet.</p>
+    {% endfor %}
+</div>
+
+<h4>Add new image filename</h4>
+<form method="post" enctype="multipart/form-data" class="row g-2">
+    <div class="col-md-6">
+        <input type="file" class="form-control" name="file" required>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary w-100">Upload</button>
+    </div>
+</form>
+
+
+<p class="mt-3 small text-muted">
+    Note: place the actual image file in <code>static/img</code> with exactly the same name.
+</p>
+
+{% endblock %}

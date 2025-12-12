@@ -1,0 +1,31 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: 700;
+}
+
+.card-img-top {
+    object-fit: cover;
+    height: 180px;
+}
+
+.star-rating {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.star-rating .star {
+    color: #ccc;
+    transition: color 0.2s;
+    margin-right: 2px;
+}
+
+.star-rating .star.active {
+    color: #f1c40f;
+}
+
+.star-rating .star.hover {
+    color: #f7dc6f;
+}

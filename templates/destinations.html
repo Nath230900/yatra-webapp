@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Destinations in Nepal</h2>
+
+<form class="row g-3 mb-4" method="get">
+  <div class="col-md-4">
+    <input type="text" name="q" class="form-control" placeholder="Search by name, region, description"
+      value="{{ q or request.args.q }}">
+  </div>
+  <div class="col-md-3">
+    <input type="text" name="region" class="form-control" placeholder="Filter by region"
+      value="{{ request.args.region }}">
+  </div>
+  <div class="col-md-3">
+    <input type="text" name="category" class="form-control" placeholder="Filter by category"
+      value="{{ request.args.category }}">
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-primary w-100" type="submit">Apply</button>
+  </div>
+</form>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for d in destinations %}
+  <div class="col">
+    <div class="card h-100 shadow-sm">
+
+      {% if d.image_url %}
+      <img src="{{ url_for('static', filename='img/' ~ d.image_url) }}" class="card-img-top"
+        style="height: 200px; object-fit: cover;" alt="{{ d.name }}">
+      {% endif %}
+
+      <div class="card-body">
+        <h5 class="card-title">{{ d.name }}</h5>
+        <p class="card-text mb-1">
+          <strong>{{ d.region }}</strong> · {{ d.category }}
+        </p>
+        <p class="card-text small">
+          {{ d.description[:140] }}...
+        </p>
+        <a href="{{ url_for('destination_detail', dest_id=d.id) }}" class="btn btn-outline-primary btn-sm">
+          View
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

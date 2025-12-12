@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin: Destinations</h2>
+<p class="text-muted">Click "Images" to manage photos for each destination.</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Region</th>
+            <th>Images</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in destinations %}
+        <tr>
+            <td>{{ d.id }}</td>
+            <td>{{ d.name }}</td>
+            <td>{{ d.region }}</td>
+            <td>
+                <a class="btn btn-sm btn-outline-primary"
+                    href="{{ url_for('admin_destination_images', dest_id=d.id) }}">
+                    Manage images ({{ d.images|length }})
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

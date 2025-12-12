@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-3">{{ destination.name }}</h2>
+
+{# IMAGE CAROUSEL OR SINGLE IMAGE #}
+{% if destination.images %}
+<div id="destCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    {% for img in destination.images %}
+    <div class="carousel-item {% if loop.first %}active{% endif %}">
+      <img src="{{ url_for('static', filename='img/' ~ img.filename) }}" class="d-block w-100 rounded shadow"
+        style="max-height: 400px; object-fit: cover;" alt="{{ destination.name }} image {{ loop.index }}">
+    </div>
+    {% endfor %}
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#destCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#destCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+{% elif destination.image_url %}
+<div class="text-center mb-4">
+  <img src="{{ url_for('static', filename='img/' ~ destination.image_url) }}" class="img-fluid rounded shadow"
+    style="max-height: 400px; object-fit: cover;" alt="{{ destination.name }}">
+</div>
+{% endif %}
+
+<p>
+  <strong>Region:</strong> {{ destination.region }} |
+  <strong>Category:</strong> {{ destination.category }}
+</p>
+
+<p>{{ destination.description }}</p>
+
+{% if destination.highlights %}
+<p><strong>Highlights:</strong> {{ destination.highlights }}</p>
+{% endif %}
+
+{% if destination.latitude and destination.longitude %}
+<p class="text-muted small mb-1">
+  Co-ordinates: {{ destination.latitude }}, {{ destination.longitude }}
+</p>
+
+{# GOOGLE MAP EMBED #}
+<div class="ratio ratio-16x9 mb-4">
+  <iframe
+    src="https://www.google.com/maps?q={{ destination.latitude }},{{ destination.longitude }}&hl=en&z=14&output=embed"
+    style="border:0;" allowfullscreen="" loading="lazy">
+  </iframe>
+</div>
+
+<p class="small">
+  <a target="_blank"
+    href="https://www.google.com/maps/search/?api=1&query={{ destination.latitude }},{{ destination.longitude }}">
+    Open in Google Maps
+  </a>
+</p>
+{% endif %}
+
+<hr>
+
+<h4>Reviews</h4>
+
+{% if current_user.is_authenticated %}
+<form method="post" class="mb-3">
+  <div class="row g-2 align-items-center">
+    <div class="col-md-3">
+      <label class="form-label">Rating</label>
+      <div class="star-rating">
+        <input type="hidden" name="rating" id="ratingInput" value="5">
+        {% for i in range(1, 6) %}
+        <span class="star" data-value="{{ i }}">&#9733;</span>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-md-7">
+      <label for="comment" class="form-label">Comment</label>
+      <textarea class="form-control" name="comment" id="comment" rows="2"
+        placeholder="Share your experience"></textarea>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+      <button class="btn btn-primary w-100">Submit</button>
+    </div>
+  </div>
+</form>
+{% else %}
+<p><a href="{{ url_for('login') }}">Log in</a> to write a review.</p>
+{% endif %}
+
+{% for r in reviews %}
+<div class="border rounded p-2 mb-2">
+  <strong>{{ r.user.name }}</strong>
+  <span class="badge bg-success ms-2">{{ r.rating }} / 5</span>
+  <div class="small text-muted">
+    {{ r.created_at.strftime('%Y-%m-%d') }}
+  </div>
+  <p class="mb-0 mt-1">{{ r.comment }}</p>
+
+  {% if current_user.is_authenticated and (r.user_id == current_user.id or (current_user.is_admin if
+  current_user.is_authenticated else False)) %}
+  <form method="post" action="{{ url_for('delete_review', review_id=r.id) }}" class="mt-2">
+    <button class="btn btn-sm btn-outline-danger">Delete</button>
+  </form>
+  {% endif %}
+</div>
+{% else %}
+<p>No reviews yet. Be the first!</p>
+{% endfor %}
+
+
+{# STAR RATING JS #}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('.star-rating .star');
+    const ratingInput = document.getElementById('ratingInput');
+
+    function setRating(val) {
+      ratingInput.value = val;
+      stars.forEach(star => {
+        const value = parseInt(star.getAttribute('data-value'));
+        star.classList.toggle('active', value <= val);
+      });
+    }
+
+    stars.forEach(star => {
+      star.addEventListener('click', function () {
+        const val = parseInt(this.getAttribute('data-value'));
+        setRating(val);
+      });
+      star.addEventListener('mouseover', function () {
+        const val = parseInt(this.getAttribute('data-value'));
+        stars.forEach(s => {
+          const v = parseInt(s.getAttribute('data-value'));
+          s.classList.toggle('hover', v <= val);
+        });
+      });
+      star.addEventListener('mouseout', function () {
+        stars.forEach(s => s.classList.remove('hover'));
+      });
+    });
+
+    // initial
+    setRating(parseInt(ratingInput.value || '5'));
+  });
+</script>
+
+{% endblock %}

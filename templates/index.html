@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="p-4 mb-4 bg-light rounded-3">
+  <div class="container-fluid py-3">
+    <h1 class="display-5 fw-bold">Discover Nepal with YATRA</h1>
+    <p class="col-md-8 fs-5">
+      Plan your trip with real locations, curated itineraries and community reviews.
+    </p>
+    <a href="{{ url_for('destinations') }}" class="btn btn-primary btn-lg">Explore destinations</a>
+  </div>
+</div>
+<h2 class="mb-3">Featured Destinations</h2>
+
+{% if destinations %}
+<div class="row g-4">
+  {% for d in destinations %}
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm">
+
+      {% if d.image_url %}
+      <img src="{{ url_for('static', filename='img/' ~ d.image_url) }}" class="card-img-top"
+        style="height: 220px; object-fit: cover;" alt="{{ d.name }}">
+      {% endif %}
+
+      <div class="card-body">
+        <h5 class="card-title">{{ d.name }}</h5>
+        <p class="card-text mb-1">
+          <strong>{{ d.region }}</strong> · {{ d.category }}
+        </p>
+        <p class="card-text small">
+          {{ d.description[:140] }}...
+        </p>
+        <a href="{{ url_for('destination_detail', dest_id=d.id) }}" class="btn btn-outline-primary btn-sm">
+          View
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">No destinations available yet.</p>
+{% endif %}
+{% endblock %}
