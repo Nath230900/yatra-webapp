@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # YATRA – Nepal Tourism Web App (Flask)
 
 This folder is ready to open directly in **VS Code**.
@@ -51,3 +52,6 @@ This folder is ready to open directly in **VS Code**.
 
 Alternatively, press **Run and Debug** in VS Code and choose
 **Python: Flask (YATRA)** from the debug configurations.
+=======
+# yatra-webapp
+>>>>>>> 1cd30c253774b35de89458a9c144eef524fe125f
